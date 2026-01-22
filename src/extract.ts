@@ -7,24 +7,33 @@ import { extractStorybookGlobals } from './helpers/extract-storybook-globals';
 import { transformStorybookData } from './helpers/transform-storybook-data';
 
 export async function extract(options: Options) {
-  const iframeUrl = new URL('/iframe.html', options.url);
-  const data = await extractStorybookGlobals(iframeUrl.href);
+  // Ensure URL ends with slash before appending iframe.html
+  const baseUrl = options.url.endsWith('/') ? options.url : `${options.url}/`;
+  const iframeUrl = `${baseUrl}iframe.html`;
+  const data = await extractStorybookGlobals(iframeUrl);
   const transformedData = transformStorybookData(data, options.url);
-
-  const shortenDataJustForTesting = transformedData.slice(10, 20);
 
   // TODO: This could run concurrently
   if (transformedData.length > 0) {
     console.log(
       `Found ${transformedData.length} docs pages, extracting documentation...`,
     );
-    const withDocs = await extractDocs(shortenDataJustForTesting, options);
+    const withDocs = await extractDocs(transformedData, options);
     console.log(
       `Found ${transformedData.length} stories, extracting screenshots...`,
     );
     const fullData = await extractScreenshots(withDocs, options);
 
-    await fsextra.writeFile(options.output, JSON.stringify(fullData, null, 2));
+    // Filter out undefined results from failed extractions
+    const validData = fullData.filter(
+      (item): item is NonNullable<typeof item> => item !== undefined,
+    );
+
+    console.log(
+      `Successfully extracted ${validData.length} of ${transformedData.length} stories`,
+    );
+
+    await fsextra.writeFile(options.output, JSON.stringify(validData, null, 2));
 
     if (options.postProcess.length > 0) {
       for (const postProcess of options.postProcess) {

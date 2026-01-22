@@ -6,30 +6,26 @@
   "author": "filipdanisko",
   "license": "MIT",
   "engines": {
-    "node": ">= 16.0 <17"
+    "node": ">= 18.0"
   },
   "repository": {
     "type": "git",
     "url": "https://github.com/filipdanisko/storybook-extractor.git"
   },
   "devDependencies": {
-    "@types/express": "^4.17.13",
-    "@types/fs-extra": "^9.0.13",
-    "@types/jest": "~27.0.2",
-    "@types/node": "~16.11.6",
-    "@types/sharp": "^0.29.5",
-    "@types/tiny-async-pool": "^1.0.0",
-    "@typescript-eslint/eslint-plugin": "~5.7.0",
-    "@typescript-eslint/parser": "~5.7.0",
-    "eslint": "~8.4.1",
-    "eslint-config-prettier": "~8.3.0",
-    "eslint-plugin-jest": "~25.3.0",
-    "jest": "~27.4.4",
-    "prettier": "~2.5.1",
-    "rimraf": "~3.0.2",
-    "ts-jest": "~27.1.1",
-    "tsutils": "~3.21.0",
-    "typescript": "~4.5.3"
+    "@types/fs-extra": "^11.0.4",
+    "@types/jest": "^29.5.14",
+    "@types/node": "^22.15.2",
+    "typescript-eslint": "^8.31.0",
+    "eslint": "^9.25.1",
+    "eslint-config-prettier": "^10.1.2",
+    "eslint-plugin-jest": "^28.11.0",
+    "globals": "^16.1.0",
+    "jest": "^29.7.0",
+    "prettier": "^3.5.3",
+    "rimraf": "^6.0.1",
+    "ts-jest": "^29.3.2",
+    "typescript": "^5.8.3"
   },
   "scripts": {
     "start": "node build/src/main.js",
@@ -37,17 +33,16 @@
     "prebuild": "npm run lint",
     "build": "tsc -p tsconfig.release.json",
     "build:watch": "tsc -w -p tsconfig.release.json",
-    "lint": "eslint . --ext .ts,.tsx",
+    "lint": "eslint .",
     "test": "jest --coverage",
     "test:watch": "jest --watch"
   },
   "dependencies": {
-    "crypto": "^1.0.1",
-    "fs-extra": "^10.0.0",
-    "puppeteer": "^13.0.1",
+    "fs-extra": "^11.3.0",
+    "puppeteer": "^24.6.0",
     "sade": "^1.8.1",
-    "sharp": "^0.29.3",
-    "tiny-async-pool": "^1.2.0",
-    "tslib": "~2.3.1"
+    "sharp": "^0.34.1",
+    "tiny-async-pool": "^2.1.0",
+    "tslib": "^2.8.1"
   }
 }

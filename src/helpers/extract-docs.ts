@@ -9,7 +9,8 @@ import type { Options, StorybookFormatedData } from '../types';
 export const extractDocs = async (data, options: Options) => {
   const browser = await puppeteer.launch(PUPPETEER_SETTINGS);
 
-  const withDocs = await asyncPool(
+  const withDocs: (StorybookFormatedData | undefined)[] = [];
+  for await (const result of asyncPool(
     options.concurentScrapers,
     data,
     async ({ urls, ...rest }: StorybookFormatedData) => {
@@ -20,18 +21,38 @@ export const extractDocs = async (data, options: Options) => {
           waitUntil: 'domcontentloaded',
         });
 
-        const docsData = await page.$eval('#docs-root', (el) => {
+        // Wait for content to load - try multiple selectors for different Storybook versions
+        // Storybook 7+ uses .sb-docs-content or .docs-story, older versions use #docs-root
+        await page.waitForFunction(
+          () => {
+            return (
+              document.querySelector('#docs-root') ||
+              document.querySelector('.sb-docs-content') ||
+              document.querySelector('.docs-story') ||
+              document.querySelector('h1')
+            );
+          },
+          { timeout: 5000 },
+        );
+
+        const docsData = await page.evaluate(() => {
+          // Try different root selectors for compatibility
+          const root =
+            document.querySelector('#docs-root') ||
+            document.querySelector('.sb-docs-content') ||
+            document.body;
+
           return {
-            heading: el.querySelector('h1')?.innerText,
-            firstParagraph: el.querySelector('p')?.innerText,
-            tablesHtml: [...el.querySelectorAll('table')].map(
+            heading: root.querySelector('h1')?.innerText,
+            firstParagraph: root.querySelector('p')?.innerText,
+            tablesHtml: [...root.querySelectorAll('table')].map(
               (el) => el?.outerHTML,
             ),
-            codeSnippets: [...el.querySelectorAll('pre code')].map(
+            codeSnippets: [...root.querySelectorAll('pre code')].map(
               (el) => (<HTMLElement>el)?.innerText,
             ),
-            fullText: (<HTMLElement>el)?.innerText,
-            rawHtml: (<HTMLElement>el)?.innerHTML,
+            fullText: (<HTMLElement>root)?.innerText,
+            rawHtml: (<HTMLElement>root)?.innerHTML,
           };
         });
 
@@ -42,7 +63,9 @@ export const extractDocs = async (data, options: Options) => {
         console.error(rest.id, error);
       }
     },
-  );
+  )) {
+    withDocs.push(result);
+  }
 
   await browser.close();
 

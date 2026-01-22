@@ -2,7 +2,8 @@
 import { extract } from "./extract";
 import path from "path";
 import sade from "sade";
-import * as packageJson from "../package.json";
+// eslint-disable-next-line @typescript-eslint/no-require-imports
+const packageJson = require("../package.json");
 
 sade("storybook-extractor", true)
   .version(packageJson.version)
@@ -10,7 +11,8 @@ sade("storybook-extractor", true)
   .option("-c, --config", "Path to config file")
   .action(async (options) => {
     const configPath = path.resolve(process.cwd(), options.config);
-    const config = await import(configPath);
+    const configModule = await import(configPath);
+    const config = configModule.default || configModule;
 
     if (!config.concurentScrapers) {
       config.concurentScrapers = 10;

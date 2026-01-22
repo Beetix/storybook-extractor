@@ -19,6 +19,7 @@ export type StorybookFormatedData = {
     storyUrlIframe: string;
     docsUrlIframe: string;
   };
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   raw: any; //TODO: type properly using Storybook types
 };
 export type StorybookMetadataOutput = StorybookFormatedData & {

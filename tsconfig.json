@@ -1,6 +1,6 @@
 {
   "compilerOptions": {
-    "target": "esnext",
+    "target": "ES2022",
     "module": "commonjs",
     "moduleResolution": "node",
     "esModuleInterop": true,
@@ -10,6 +10,7 @@
     "jsx": "react",
     "alwaysStrict": true,
     "sourceMap": true,
+    "declaration": true,
     "forceConsistentCasingInFileNames": true,
     "noFallthroughCasesInSwitch": true,
     "noImplicitReturns": false,
@@ -18,7 +19,8 @@
     "noImplicitAny": false,
     "noImplicitThis": false,
     "strictNullChecks": false,
-    "resolveJsonModule": true,
+    "skipLibCheck": true,
+    "resolveJsonModule": true
   },
   "include": [
     "src/**/*",
